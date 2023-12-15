@@ -1,6 +1,8 @@
 pipeline{
     agent any
-
+    environment {
+     DOCKERHUB_CREDENTIALS = credentials('dockerhub')
+  	}
     stages {
 
         stage('Getting project from CDCI-Checkpoint') {
@@ -17,13 +19,17 @@ pipeline{
       	sh 'docker build -t omarbensalah8/firstlabphase .'
       }
     }
-       stage('Docker login') {
-        agent any
-         steps {
-          withCredentials([usernamePassword(credentialsId: 'dockerHub', passwordVariable: 'dockerHubPassword', usernameVariable: 'dockerHubUser')]) {
-        	sh 'docker login -u ${env.dockerHubUser} -p ${env.dockerHubPassword}'
-          }
-       }
+       //stage('Docker login') {
+       // agent any
+        // steps {
+          //withCredentials([usernamePassword(credentialsId: 'dockerHub', passwordVariable: 'dockerHubPassword', usernameVariable: 'dockerHubUser')]) {
+        //	sh 'docker login -u ${env.dockerHubUser} -p ${env.dockerHubPassword}'
+         // }
+       //}
+stage('Login to docker hub') {
+      steps {
+        sh 'echo $DOCKERHUB_CREDENTIALS_PSW | docker login -u $DOCKERHUB_CREDENTIALS_USR --password-stdin'
+      }
      }
 
       stage ('Docker push to hub') {
